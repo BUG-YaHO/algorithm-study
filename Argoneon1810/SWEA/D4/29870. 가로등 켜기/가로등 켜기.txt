@@ -1,0 +1,39 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.StringTokenizer;
+
+class Solution {
+	public static void main(String args[]) throws Exception {
+		new Solution().solve();
+	}
+
+	void solve() throws IOException {
+		BufferedReader br = new BufferedReader(
+				new InputStreamReader(System.in));
+		int T;
+		T = Integer.parseInt(br.readLine().trim());
+		StringBuilder sb = new StringBuilder();
+		for (int test_case = 1; test_case <= T; test_case++)
+			sb.append('#').append(test_case)
+					.append(' ').append(solveInner(br))
+					.append('\n');
+		System.out.print(sb);
+	}
+
+	String solveInner(BufferedReader br) throws IOException {
+		StringTokenizer st = new StringTokenizer(br.readLine());
+		int N = Integer.parseInt(st.nextToken());
+		return Integer.toString(f(OFF, N) + f(ON, N));
+	}
+
+	int[][] m = new int[2][40+1];
+	static final int OFF = 0;
+	static final int ON = 1;
+	int f(int s, int n) {
+		int t = m[s][n];
+		if(t>0) return t;
+		if(n<2) return 1;
+		return m[s][n] = f(OFF, n-1) + (s==OFF ? f(ON, n-1) : 0);
+	}
+}

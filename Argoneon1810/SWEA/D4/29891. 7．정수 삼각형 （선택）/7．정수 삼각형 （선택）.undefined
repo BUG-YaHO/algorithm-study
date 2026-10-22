@@ -1,0 +1,71 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.StringTokenizer;
+
+class Solution {
+	static final int[] SUM;
+	static {
+ 		SUM = new int[101];
+		for(int i=1; i<=100; ++i)
+			SUM[i] = i+SUM[i-1];
+	}
+
+	public static void main(String args[]) throws Exception {
+		new Solution().solve();
+	}
+
+	void solve() throws IOException {
+		BufferedReader br = new BufferedReader(
+				new InputStreamReader(System.in));
+		int T;
+		T = Integer.parseInt(br.readLine().trim());
+		StringBuilder sb = new StringBuilder();
+		for (int test_case = 1; test_case <= T; test_case++)
+			sb.append('#').append(test_case)
+					.append(' ').append(solveInner(br))
+					.append('\n');
+		System.out.print(sb);
+	}
+
+	String solveInner(BufferedReader br) throws IOException {
+		StringTokenizer st = new StringTokenizer(br.readLine());
+		int N = Integer.parseInt(st.nextToken());
+		int len = SUM[N];
+		int[] arr = new int[len];
+		for(int i=0; i<len; ++i) {
+			if(!st.hasMoreTokens())
+				st = new StringTokenizer(br.readLine());
+			arr[i] = Integer.parseInt(st.nextToken());
+		}
+		// [층의 수][층별 최대 요소 수]
+		// 예외처리의 편의를 위해 0층을 버리고 1-based로
+		int Np1 = N+1;
+		int[] score = new int[Np1*N];
+		score[N] = arr[0];
+		// 층 무시 계수기
+		int cnt = 1;
+		int[] dp = new int[Np1];
+		dp[1] = score[N];
+		// 각 층
+		for(int step=2; step<=N; ++step) {
+			// 층의 각 칸
+			for(int idx=0; idx<step; ++idx) {
+				// 현재 칸
+				score[step*N+idx] = arr[cnt]
+								    + Integer.max(
+								        // 이전 층의 내 칸 
+								        // (없다면 0)
+										score[(step-1)*N+idx],
+								        // 이전 층의 이전 칸
+								        // (없다면 층침범이지만, 
+								        //  그래도 0)
+								    	score[(step-1)*N+idx-1]
+									);
+				dp[step] = Integer.max(dp[step], score[step*N+idx]);
+				++cnt;
+			}
+		}
+		return Integer.toString(dp[N]);
+	}
+}

@@ -1,0 +1,52 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.StringTokenizer;
+
+class Solution {
+	public static void main(String args[]) throws Exception {
+		new Solution().solve();
+	}
+
+	void solve() throws IOException {
+		BufferedReader br = new BufferedReader(
+				new InputStreamReader(System.in));
+		int T;
+		T = Integer.parseInt(br.readLine().trim());
+		StringBuilder sb = new StringBuilder();
+		for (int test_case = 1; test_case <= T; test_case++)
+			sb.append('#').append(test_case)
+					.append(' ').append(solveInner(br))
+					.append('\n');
+		System.out.print(sb);
+	}
+
+	String solveInner(BufferedReader br) throws IOException {
+		StringTokenizer st = new StringTokenizer(br.readLine());
+		int N, K;
+		N = Integer.parseInt(st.nextToken());
+		K = Integer.parseInt(st.nextToken());
+		int[] coins = new int[N];
+		st = new StringTokenizer(br.readLine());
+		for(int i=0; i<N; ++i)
+			coins[i] = Integer.parseInt(st.nextToken());
+		int[] dp = new int[K+1];
+		boolean[] visited = new boolean[K+1];
+		dp[0] = 0;
+		for(int k=1; k<=K; ++k) {
+			for (int c=N-1; c>=0; --c) {
+				int leftover = k-coins[c];
+				// 이번 동전 못 씀
+				if (leftover < 0 || dp[leftover] < 0) continue;
+				if (!visited[k]) {
+					visited[k] = true;
+					dp[k] = dp[leftover] + 1;
+				} else {
+					dp[k] = Integer.min(dp[k], dp[leftover]+1);
+				}
+			}
+			if (!visited[k]) dp[k] = -1;
+		}
+		return Integer.toString(dp[K]);
+	}
+}

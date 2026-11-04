@@ -9,6 +9,7 @@ public class Solution {
 
 	static int N, M, X;
 	static ArrayList<int[]>[] graph;
+	static ArrayList<int[]>[] reverseGraph;
 
 	public static void main(String[] args) throws Exception {
 
@@ -25,8 +26,10 @@ public class Solution {
 			X = Integer.parseInt(st.nextToken());
 
 			graph = new ArrayList[N + 1];
+			reverseGraph = new ArrayList[N + 1];
 			for (int i = 1; i <= N; i++) {
 				graph[i] = new ArrayList<>();
+				reverseGraph[i] = new ArrayList<>();
 			}
 
 			for (int i = 0; i < M; i++) {
@@ -36,18 +39,14 @@ public class Solution {
 				int c = Integer.parseInt(st.nextToken());
 
 				graph[x].add(new int[] { y, c });
+				reverseGraph[y].add(new int[] { x, c });
 			}
 
 			int[] go = new int[N + 1];
 			int[] back = new int[N + 1];
 
-			for (int i = 1; i <= N; i++) {
-				go[i] = dijkstra(i, X, graph); // i to X
-			}
-
-			for (int i = 1; i <= N; i++) {
-				back[i] = dijkstra(X, i, graph); // X to i
-			}
+			go = dijkstra(X, reverseGraph);
+			back = dijkstra(X, graph);
 
 			int[] answer = new int[N + 1];
 			for (int i = 1; i <= N; i++) {
@@ -62,7 +61,7 @@ public class Solution {
 		System.out.println(sb);
 	}
 
-	static int dijkstra(int start, int finish, ArrayList<int[]>[] graph) {
+	static int[] dijkstra(int start, ArrayList<int[]>[] graph) {
 
 		int[] dist = new int[N + 1];
 		Arrays.fill(dist, Integer.MAX_VALUE);
@@ -82,10 +81,6 @@ public class Solution {
 				continue;
 			}
 
-			if (nowHome == finish) {
-				return value;
-			}
-
 			for (int[] next : graph[nowHome]) {
 				int nextHome = next[0];
 				int nextValue = next[1] + value;
@@ -97,6 +92,6 @@ public class Solution {
 			}
 		}
 
-		return 0;
+		return dist;
 	}
 }
